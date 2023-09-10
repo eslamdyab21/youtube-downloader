@@ -52,7 +52,7 @@ print('----------------------------------------------')
 index = 0
 videos_lst = []
 for vid in pl.videos:
-    print(index, vid.title)
+    print(str(index) + ' --> ', vid.title)
     index = index + 1
     videos_lst.append(vid)
 print('----------------------------------------------')
