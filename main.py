@@ -1,5 +1,6 @@
 from pytube import YouTube
 from pytube import Playlist
+import requests
 
 #Gives download progress
 def on_progress(stream, chunk, bytes_remaining):
@@ -10,6 +11,26 @@ def on_progress(stream, chunk, bytes_remaining):
 def on_complete(stream, file_path):
     print("Download Completed")
     print(f"Download path: {file_path}")
+
+
+def get_playlist_titles(url):
+    # request web page
+    resp = requests.get(url)
+
+    # get the response text. in this case it is HTML
+    html = resp.text
+
+    i = html.find('"title":{"runs":[{"text":')
+
+    titles_html = html[i:]
+
+    titles_indexes = [i for i in range(len(titles_html)) if titles_html.startswith('"title":{"runs":[{"text":', i)]
+
+    i = 0
+    for index in titles_indexes:
+        if 'accessibility' in titles_html[index:index+300]:
+            print(str(i) + ' --> ', titles_html[index:index+100].split('"}]')[0].split('"text":"')[1])
+            i = i + 1
 
 
 #get playlist url from user
