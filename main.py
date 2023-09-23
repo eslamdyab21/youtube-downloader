@@ -2,6 +2,8 @@ from pytube import YouTube
 from pytube import Playlist
 import requests
 
+remaining_video_count = 0
+
 #Gives download progress
 def on_progress(stream, chunk, bytes_remaining):
     progress = f"{round(100 - (bytes_remaining/stream.filesize * 100),2)}%"
@@ -34,6 +36,7 @@ def get_playlist_titles(url):
 
 
 def check_res(res):
+    global remaining_video_count
     if(res and yt.streams.filter(file_extension='mp4', progressive=True)): #if the resolution match
         title = yt.title
         print(f"Video title: {title}")
@@ -57,7 +60,7 @@ pl = Playlist(pl_url)
 
 #Num of videos in playlist
 video_count = pl.length
-remaining_video_count = 0
+
 
 print(f"Number of videos in the playlist: {video_count}")
 
@@ -101,7 +104,6 @@ wanted_resolution = input("Enter a resolution: ")
 
 print('----------------------------------------------')
 print()
-
 
 print("Downloading started...")
 
