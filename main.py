@@ -33,6 +33,22 @@ def get_playlist_titles(url):
             i = i + 1
 
 
+def check_res(res):
+    if(res and yt.streams.filter(file_extension='mp4', progressive=True)): #if the resolution match
+        title = yt.title
+        print(f"Video title: {title}")
+        print("Video download quality: 720p")
+        file_size = round((res.filesize / 1000000), 2)
+        print(f"File Size: {file_size} MB")
+        res.download()
+        remaining_video_count += 1
+        print("\n")
+
+        return True
+    
+    return False
+
+
 #get playlist url from user
 pl_url = input("Enter Playlist URL:\n")
 
@@ -59,6 +75,7 @@ print('----------------------------------------------')
 
 print()
 
+print('----------------------------------------------')
 print("Select videos you want to download...")
 print("Ex: 0,2,3,5,6,7 or all")
 selection = input("Enter your selection: ")
@@ -75,6 +92,17 @@ elif selection == 'all':
     selected_videos_lst = videos_lst
 
 
+
+print()
+print('----------------------------------------------')
+print("Select a resolution you want...")
+print("Ex: 720 or 480 or 360")
+wanted_resolution = input("Enter a resolution: ")
+
+print('----------------------------------------------')
+print()
+
+
 print("Downloading started...")
 
 for vids in selected_videos_lst:
@@ -82,39 +110,21 @@ for vids in selected_videos_lst:
     vid_url = vids.watch_url
     yt = YouTube(url = vid_url, on_progress_callback=on_progress, on_complete_callback=on_complete) #create Youtube obj
 
-    res_480p = yt.streams.get_by_resolution('480p')
     res_720p = yt.streams.get_by_resolution('720p')
+    res_480p = yt.streams.get_by_resolution('480p')
     res_360p = yt.streams.get_by_resolution('360p')
 
-    if(res_720p and yt.streams.filter(file_extension='mp4', progressive=True)): #if the resolution match 480p
-        title = yt.title
-        print(f"Video title: {title}")
-        print("Video download quality: 720p")
-        file_size = round((res_720p.filesize / 1000000), 2)
-        print(f"File Size: {file_size} MB")
-        res_720p.download()
-        remaining_video_count += 1
-        print("\n")
-        
-    elif(res_480p and yt.streams.filter(file_extension='mp4', progressive=True)): #if the resolution match 720p
-        title = yt.title
-        print(f"Video title: {title}")
-        print("Video download quality: 480p")
-        file_size = round((res_480p.filesize / 1000000), 2)
-        print(f"File Size: {file_size} MB")
-        res_480p.download()
-        remaining_video_count += 1
-        print("\n")
-        
-    elif(res_360p and yt.streams.filter(file_extension='mp4', progressive=True)): #if the resolution match 360p
-        title = yt.title
-        print(f"Video title: {title}")
-        print("Video download quality: 360p")
-        file_size = round((res_360p.filesize / 1000000), 2)
-        print(f"File Size: {file_size} MB")
-        res_360p.download()
-        remaining_video_count += 1
-        print("\n")
+    if wanted_resolution == '720':
+        check_res(res_720p)
+        check_res(res_480p)
+        check_res(res_360p)
+            
+    elif wanted_resolution == '480':
+        check_res(res_480p)
+        check_res(res_360p)
+    
+    elif wanted_resolution == '360':
+        check_res(res_360p)
 
     else:
         print("Low quality video. No video will be downloaded")
