@@ -99,8 +99,8 @@ elif selection == 'all':
 print()
 print('----------------------------------------------')
 print("Select a resolution you want...")
-print("Ex: 720 or 480 or 360")
-wanted_resolution = input("Enter a resolution: ")
+print("Ex: 720 or 480 or 360 or Enter audio for audio only")
+wanted_resolution = input("Enter a choice: ")
 
 print('----------------------------------------------')
 print()
@@ -111,27 +111,40 @@ for vids in selected_videos_lst:
 
     vid_url = vids.watch_url
     yt = YouTube(url = vid_url, on_progress_callback=on_progress, on_complete_callback=on_complete) #create Youtube obj
+    try:
+        res_720p = yt.streams.get_by_resolution('720p')
+        res_480p = yt.streams.get_by_resolution('480p')
+        res_360p = yt.streams.get_by_resolution('360p')
+        
 
-    res_720p = yt.streams.get_by_resolution('720p')
-    res_480p = yt.streams.get_by_resolution('480p')
-    res_360p = yt.streams.get_by_resolution('360p')
+        if wanted_resolution == '720':
+            check_res(res_720p)
+            check_res(res_480p)
+            check_res(res_360p)
+                
+        elif wanted_resolution == '480':
+            check_res(res_480p)
+            check_res(res_360p)
+        
+        elif wanted_resolution == '360':
+            check_res(res_360p)
 
-    if wanted_resolution == '720':
-        check_res(res_720p)
-        check_res(res_480p)
-        check_res(res_360p)
-            
-    elif wanted_resolution == '480':
-        check_res(res_480p)
-        check_res(res_360p)
-    
-    elif wanted_resolution == '360':
-        check_res(res_360p)
+        elif wanted_resolution =='audio':
+            stream = yt.streams.filter(only_audio=True).first()
+            print("The video is downloaded in MP3")
+            file_size = round((stream.filesize / 1000000), 2)
+            print(f"File Size: {file_size} MB")
+            stream.download(filename=f"{yt.title}.mp3")
+            remaining_video_count += 1
 
-    else:
-        print("Low quality video. No video will be downloaded")
+        else:
+            print("Low quality video. No video will be downloaded")
 
+    except:
+        print("An exception occurred")
 
+        
     print(f"Downloaded: {remaining_video_count} out of {len(selected_videos_lst)}")
+
 
 print("Downloading Done...")
